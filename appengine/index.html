@@ -1,0 +1,69 @@
+<html>
+    <head>
+        <script src="/_ah/channel/jsapi"></script>
+        <script src="/js/jquery-1.5.1.min.js"></script>
+        <title>GAEA Demo</title>
+    </head>
+    <body style="width: 100%; background-color: dodger-blue">
+        <!-- Let"s get our functi"s on. -->
+        <script type="text/javascript">
+        runScript = function() {
+            $("#result").text("");
+            var agent = $("#agent_selection option:selected").val();
+            var code = $("#code").val();
+            var data = {"agent": agent, "code": code};
+            $.post("/execute", data);
+        }
+
+        var channel = new goog.appengine.Channel("{{ channel_token }}");
+        var socket = channel.open();
+        socket.onmessage = function(evt) {
+            var data = JSON.parse(evt.data);
+            if (data == "\n") {
+                $("#result").append("<br/>");
+            } else {
+                var escaped = $('<div/>').text(data).html();
+                $("#result").append(escaped);
+            }
+        }
+        </script>
+
+        <!-- Do stuff. -->
+        <script type="text/javascript">
+        $(document).ready(function() {
+            $.get("/available", function(data) {
+                data = JSON.parse(data);
+                $.each(data.agents, function(index, agent) {
+                    $("#agent_selection").append(
+                        $("<option></option>").val(agent).html(agent));
+                });
+            });
+        });
+        </script>
+
+        <!-- UI bits. -->
+        <form width="80%">
+            <table width="100%">
+                <tr>
+                    <td><select id="agent_selection"></select></td>
+                </tr>
+                <tr width="100%">
+                    <td width="100%">
+<textarea id="code" cols="80" rows="20">
+arg = agent.hello.request_type()
+arg.my_name = "Andrew"
+agent.hello(arg)</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="button" value="Go!"
+                               onclick="runScript()"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div id="result" width="80%"></div>
+    </body>
+</html>
+

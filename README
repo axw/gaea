@@ -1,0 +1,44 @@
+Google App Engine Agent
+=======================
+
+This is a toy project for demonstrating server-initiated RPC for
+Google App Engine applications. The RPC operates over XMPP (Google Talk)
+to avoid long-polling.
+
+Included in the project is a Google App Engine Python application, and a
+client program. The GAE application provides a very basic web UI for executing
+arbitrary (security alert!) code on the GAE server, with access to an instance
+of a remote client's RPC service.
+
+The GAE application will dynamically define the RPC stubs for each client. The
+service descriptors are stored in the GAE Memcache, which allows dynamically
+spun up instances to access the descriptors after they're received. One caveat
+is that the Memcache could potentially throw data out when memory is low. The
+descriptors should probably be kept in the Datastore, but I'm lazy, and this
+worked flawlessly for the purpose of demonstration.
+
+
+Running the Google App Engine Application
+-----------------------------------------
+
+Create a new GAE application, update app.yaml, and upload the application
+files. No third-party packages are required.
+
+
+Running the Client
+------------------
+
+To run the client, ensure that the xmpppy [1], protorpc [2] and protobuf [3]
+Python packages are in the PYTHONPATH. Both of the latter packages are
+included in the Google App Engine SDK, under 'google_appengine' and
+'google_appengine/lib/protorpc'.
+
+You must specify a valid Google email account and password, which will be used
+to connect to the Google Talk server. You must specify the name of your Google
+App Engine application (<application>.appspot.com).
+
+
+[1] http://xmpppy.sourceforge.net/
+[2] http://code.google.com/p/google-protorpc/
+[3] http://code.google.com/p/protobuf/
+
